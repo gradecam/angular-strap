@@ -1,6 +1,6 @@
 /**
  * angular-strap
- * @version v2.0.5 - 2014-08-07
+ * @version v2.0.5 - 2014-08-13
  * @link http://mgcrea.github.io/angular-strap
  * @author Olivier Louvignes (olivier@mg-crea.com)
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -122,6 +122,8 @@ angular.module('mgcrea.ngStrap.helpers.dateParser', []).provider('$dateParser', 
             }
             // Sort result map
             angular.forEach(map, function (v) {
+              // conditional required since angular.forEach broke around v1.2.21
+              // related pr: https://github.com/angular/angular.js/pull/8525
               if (v)
                 sortedMap.push(v);
             });

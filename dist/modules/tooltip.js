@@ -1,6 +1,6 @@
 /**
  * angular-strap
- * @version v2.0.5 - 2014-08-07
+ * @version v2.0.5 - 2014-08-13
  * @link http://mgcrea.github.io/angular-strap
  * @author Olivier Louvignes (olivier@mg-crea.com)
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -273,10 +273,16 @@ angular.module('mgcrea.ngStrap.tooltip', ['mgcrea.ngStrap.helpers.dimensions']).
           tipElement.css(tipPosition);
         };
         $tooltip.$onKeyUp = function (evt) {
-          evt.which === 27 && $tooltip.hide();
+          if (evt.which === 27 && $tooltip.$isShown) {
+            $tooltip.hide();
+            evt.stopPropagation();
+          }
         };
         $tooltip.$onFocusKeyUp = function (evt) {
-          evt.which === 27 && element[0].blur();
+          if (evt.which === 27) {
+            element[0].blur();
+            evt.stopPropagation();
+          }
         };
         $tooltip.$onFocusElementMouseDown = function (evt) {
           evt.preventDefault();

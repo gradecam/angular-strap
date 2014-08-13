@@ -1,6 +1,6 @@
 /**
  * angular-strap
- * @version v2.0.5 - 2014-08-07
+ * @version v2.0.5 - 2014-08-13
  * @link http://mgcrea.github.io/angular-strap
  * @author Olivier Louvignes (olivier@mg-crea.com)
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -102,7 +102,8 @@ angular.module('mgcrea.ngStrap.popover', ['mgcrea.ngStrap.tooltip']).provider('$
         var popover = $popover(element, options);
         // Garbage collection
         scope.$on('$destroy', function () {
-          popover.destroy();
+          if (popover)
+            popover.destroy();
           options = null;
           popover = null;
         });

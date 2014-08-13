@@ -1,6 +1,6 @@
 /**
  * angular-strap
- * @version v2.0.5 - 2014-08-07
+ * @version v2.0.5 - 2014-08-13
  * @link http://mgcrea.github.io/angular-strap
  * @author Olivier Louvignes (olivier@mg-crea.com)
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -313,7 +313,8 @@ angular.module('mgcrea.ngStrap.alert', ['mgcrea.ngStrap.modal']).provider('$aler
         element.on(attr.trigger || 'click', alert.toggle);
         // Garbage collection
         scope.$on('$destroy', function () {
-          alert.destroy();
+          if (alert)
+            alert.destroy();
           options = null;
           alert = null;
         });
@@ -402,7 +403,8 @@ angular.module('mgcrea.ngStrap.aside', ['mgcrea.ngStrap.modal']).provider('$asid
         element.on(attr.trigger || 'click', aside.toggle);
         // Garbage collection
         scope.$on('$destroy', function () {
-          aside.destroy();
+          if (aside)
+            aside.destroy();
           options = null;
           aside = null;
         });
@@ -1317,7 +1319,8 @@ angular.module('mgcrea.ngStrap.dropdown', ['mgcrea.ngStrap.tooltip']).provider('
         var dropdown = $dropdown(element, options);
         // Garbage collection
         scope.$on('$destroy', function () {
-          dropdown.destroy();
+          if (dropdown)
+            dropdown.destroy();
           options = null;
           dropdown = null;
         });
@@ -1443,6 +1446,8 @@ angular.module('mgcrea.ngStrap.helpers.dateParser', []).provider('$dateParser', 
             }
             // Sort result map
             angular.forEach(map, function (v) {
+              // conditional required since angular.forEach broke around v1.2.21
+              // related pr: https://github.com/angular/angular.js/pull/8525
               if (v)
                 sortedMap.push(v);
             });
@@ -1942,7 +1947,10 @@ angular.module('mgcrea.ngStrap.modal', ['mgcrea.ngStrap.helpers.dimensions']).pr
         };
         // Protected methods
         $modal.$onKeyUp = function (evt) {
-          evt.which === 27 && $modal.hide();
+          if (evt.which === 27 && scope.$isShown) {
+            $modal.hide();
+            evt.stopPropagation();
+          }
         };
         // Private methods
         function hideOnBackdropClick(evt) {
@@ -2020,7 +2028,8 @@ angular.module('mgcrea.ngStrap.modal', ['mgcrea.ngStrap.helpers.dimensions']).pr
         element.on(attr.trigger || 'click', modal.toggle);
         // Garbage collection
         scope.$on('$destroy', function () {
-          modal.destroy();
+          if (modal)
+            modal.destroy();
           options = null;
           modal = null;
         });
@@ -2175,7 +2184,8 @@ angular.module('mgcrea.ngStrap.popover', ['mgcrea.ngStrap.tooltip']).provider('$
         var popover = $popover(element, options);
         // Garbage collection
         scope.$on('$destroy', function () {
-          popover.destroy();
+          if (popover)
+            popover.destroy();
           options = null;
           popover = null;
         });
@@ -2380,8 +2390,10 @@ angular.module('mgcrea.ngStrap.scrollspy', [
         var scrollspy = $scrollspy(options);
         scrollspy.trackElement(options.target, element);
         scope.$on('$destroy', function () {
-          scrollspy.untrackElement(options.target, element);
-          scrollspy.destroy();
+          if (scrollspy) {
+            scrollspy.untrackElement(options.target, element);
+            scrollspy.destroy();
+          }
           options = null;
           scrollspy = null;
         });
@@ -2691,7 +2703,8 @@ angular.module('mgcrea.ngStrap.select', [
         };
         // Garbage collection
         scope.$on('$destroy', function () {
-          select.destroy();
+          if (select)
+            select.destroy();
           options = null;
           select = null;
         });
@@ -3228,7 +3241,8 @@ angular.module('mgcrea.ngStrap.timepicker', [
         };
         // Garbage collection
         scope.$on('$destroy', function () {
-          timepicker.destroy();
+          if (timepicker)
+            timepicker.destroy();
           options = null;
           timepicker = null;
         });
@@ -3505,10 +3519,16 @@ angular.module('mgcrea.ngStrap.tooltip', ['mgcrea.ngStrap.helpers.dimensions']).
           tipElement.css(tipPosition);
         };
         $tooltip.$onKeyUp = function (evt) {
-          evt.which === 27 && $tooltip.hide();
+          if (evt.which === 27 && $tooltip.$isShown) {
+            $tooltip.hide();
+            evt.stopPropagation();
+          }
         };
         $tooltip.$onFocusKeyUp = function (evt) {
-          evt.which === 27 && element[0].blur();
+          if (evt.which === 27) {
+            element[0].blur();
+            evt.stopPropagation();
+          }
         };
         $tooltip.$onFocusElementMouseDown = function (evt) {
           evt.preventDefault();
@@ -3898,7 +3918,8 @@ angular.module('mgcrea.ngStrap.typeahead', [
         };
         // Garbage collection
         scope.$on('$destroy', function () {
-          typeahead.destroy();
+          if (typeahead)
+            typeahead.destroy();
           options = null;
           typeahead = null;
         });
