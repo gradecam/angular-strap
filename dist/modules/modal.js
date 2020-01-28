@@ -1,6 +1,6 @@
 /**
  * angular-strap
- * @version v2.3.9 - 2016-06-10
+ * @version v2.3.9 - 2020-01-29
  * @link http://mgcrea.github.io/angular-strap
  * @author Olivier Louvignes <olivier@mg-crea.com> (https://github.com/mgcrea)
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -67,6 +67,7 @@ angular.module('mgcrea.ngStrap.modal', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.
       $modal.$isShown = scope.$isShown = false;
       var compileData;
       var modalElement;
+      var backdropMouseDown = false;
       var modalScope;
       var backdropElement = angular.element('<div class="' + options.prefixClass + '-backdrop"/>');
       backdropElement.css({
@@ -221,6 +222,10 @@ angular.module('mgcrea.ngStrap.modal', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.
       };
       function bindBackdropEvents() {
         if (options.backdrop) {
+          if (options.backdrop !== 'static') {
+            modalElement.on('mousedown', preventHideOnDialogMouseDown);
+            backdropElement.on('mousedown', preventHideOnDialogMouseDown);
+          }
           modalElement.on('click', hideOnBackdropClick);
           backdropElement.on('click', hideOnBackdropClick);
           backdropElement.on('wheel', preventEventDefault);
@@ -228,6 +233,10 @@ angular.module('mgcrea.ngStrap.modal', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.
       }
       function unbindBackdropEvents() {
         if (options.backdrop) {
+          if (options.backdrop !== 'static') {
+            modalElement.off('mousedown', preventHideOnDialogMouseDown);
+            backdropElement.off('mousedown', preventHideOnDialogMouseDown);
+          }
           modalElement.off('click', hideOnBackdropClick);
           backdropElement.off('click', hideOnBackdropClick);
           backdropElement.off('wheel', preventEventDefault);
@@ -243,13 +252,19 @@ angular.module('mgcrea.ngStrap.modal', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.
           modalElement.off('keyup', $modal.$onKeyUp);
         }
       }
+      function preventHideOnDialogMouseDown(evt) {
+        if (evt.target === evt.currentTarget) {
+          backdropMouseDown = true;
+        }
+      }
       function hideOnBackdropClick(evt) {
         if (evt.target !== evt.currentTarget) return;
         if (options.backdrop === 'static') {
           $modal.focus();
-        } else {
+        } else if (backdropMouseDown) {
           $modal.hide();
         }
+        backdropMouseDown = false;
       }
       function preventEventDefault(evt) {
         evt.preventDefault();
