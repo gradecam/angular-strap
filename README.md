@@ -1,6 +1,6 @@
 # [AngularStrap](http://mgcrea.github.io/angular-strap)
 
-[![Bower Version](http://img.shields.io/bower/v/angular-strap.svg?style=flat)](https://github.com/mgcrea/angular-strap/releases) [![Build Status](http://img.shields.io/travis/mgcrea/angular-strap/master.svg?style=flat)](http://travis-ci.org/mgcrea/angular-strap) [![devDependency Status](http://img.shields.io/david/dev/mgcrea/angular-strap.svg?style=flat)](https://david-dm.org/mgcrea/angular-strap#info=devDependencies) [![Coverage Status](http://img.shields.io/codeclimate/coverage/github/mgcrea/angular-strap.svg?style=flat)](https://codeclimate.com/github/mgcrea/angular-strap) [![Climate Status](https://img.shields.io/codeclimate/github/mgcrea/angular-strap.svg?style=flat)](https://codeclimate.com/github/mgcrea/angular-strap)
+[![Bower Version](http://img.shields.io/bower/v/angular-strap.svg?style=flat)](https://github.com/mgcrea/angular-strap/releases) [![status](https://img.shields.io/badge/status-deprecated-red.svg)](https://github.com/mgcrea/angular-strap/issues/2256) [![Build Status](http://img.shields.io/travis/mgcrea/angular-strap/master.svg?style=flat)](http://travis-ci.org/mgcrea/angular-strap)
 
 [![Banner](http://mgcrea.github.io/angular-strap/images/snippet.png)](http://mgcrea.github.io/angular-strap)
 
@@ -11,6 +11,15 @@ AngularStrap is a set of native directives that enables seamless integration of 
 - AngularStrap is [tested](https://travis-ci.org/mgcrea/angular-strap) against the latest patch release of the 1.2, 1.3, 1.4 and 1.5 branches.
 
 - If you don't want to use `ngAnimate`, you will have to include a tiny [ngAnimate mock](https://github.com/mgcrea/angular-strap/wiki/ngAnimate-mock).
+
+
+## Looking for maintainers!
+
+We're currently looking for aspiring maintainers to tackle issues and pull requests!
+
+I (mgcrea) have not worked on any Angular.js v1 codebase for more than a year now. For me it's time to move on!
+
+If you have an ongoing project depending on AngularStrap, and would like to become a contributor, please chime in on [issue #2256](https://github.com/mgcrea/angular-strap/issues/2256)
 
 
 ## Documentation and examples

@@ -104,6 +104,16 @@ describe('modal', function() {
     'options-size-invalid': {
       element: '<a bs-modal="modal" data-size="md">click me</a>'
     },
+    'options-events': {
+      element: '<a bs-on-before-hide="onBeforeHide" bs-on-hide="onHide" bs-on-before-show="onBeforeShow" bs-on-show="onShow" bs-modal="modal">click me</a>'
+    },
+    'options-z-index': {
+      element: '<a bs-modal="modal" data-z-index="{{zIndex}}">click me</a>'
+    },
+    '508': {
+      scope: {modal: {title: 'Title', content: 'Hello Modal!'}},
+      element: '<button type="button" class="btn btn-primary" bs-modal="modal" keyboard="true" backdrop="static">Click Me</button>'
+    }
   };
 
   function compileDirective(template, locals) {
@@ -739,6 +749,227 @@ describe('modal', function() {
 
     });
 
+    describe('zIndex', function() {
+
+      it('does not interfere with the default values', function() {
+        var elm = compileDirective('default');
+        angular.element(elm[0]).triggerHandler('click');
+        var modal = bodyEl.find('.modal')[0];
+        var backdrop = bodyEl.find('.modal-backdrop')[0];
+        expect(angular.element(modal).css('z-index')).toBe('1050');
+        expect(angular.element(backdrop).css('z-index')).toBe('1040');
+      });
+
+      it('sets a custom z-index on a modal and decrements the backdrop z-index by 10', function() {
+        var elm = compileDirective('options-z-index', {zIndex: 2000});
+        angular.element(elm[0]).triggerHandler('click');
+        var modal = bodyEl.find('.modal')[0];
+        var backdrop = bodyEl.find('.modal-backdrop')[0];
+        expect(angular.element(modal).css('z-index')).toBe('2000');
+        expect(angular.element(backdrop).css('z-index')).toBe('1990');
+      });
+
+    });
+
+    describe('stackableModals', function() {
+
+      it('remove class modal-open from body only when the last modal is closed', function() {
+        var elm1 = compileDirective('default');
+        var elm2 = compileDirective('default');
+        // open modal 1
+        angular.element(elm1[0]).triggerHandler('click');
+        expect(sandboxEl.children('.modal').length).toBe(1);
+        // open modal 2
+        angular.element(elm2[0]).triggerHandler('click');
+        expect(sandboxEl.children('.modal').length).toBe(2);
+        // close modal 2
+        angular.element(elm2[0]).triggerHandler('click');
+        $animate.flush(); // hide only fires AFTER the animation is complete
+        expect(bodyEl.hasClass('modal-open')).toBeTruthy();
+        // close modal 1
+        angular.element(elm1[0]).triggerHandler('click');
+        $animate.flush(); // hide only fires AFTER the animation is complete
+        expect(bodyEl.hasClass('modal-open')).toBeFalsy();
+      });
+    });
+
+    describe('onBeforeShow', function() {
+
+      it('should invoke beforeShow event callback', function() {
+        var beforeShow = false;
+
+        function onBeforeShow(select) {
+          beforeShow = true;
+        }
+
+        var elm = compileDirective('options-events', {onBeforeShow: onBeforeShow});
+
+        angular.element(elm[0]).triggerHandler('click');
+
+        expect(beforeShow).toBe(true);
+      });
+    });
+
+    describe('onShow', function() {
+
+      it('should invoke show event callback', function() {
+        var show = false;
+
+        function onShow(select) {
+          show = true;
+        }
+
+        var elm = compileDirective('options-events', {onShow: onShow});
+
+        angular.element(elm[0]).triggerHandler('click');
+        $animate.flush();
+
+        expect(show).toBe(true);
+      });
+    });
+
+    describe('onBeforeHide', function() {
+
+      it('should invoke beforeHide event callback', function() {
+        var beforeHide = false;
+
+        function onBeforeHide(select) {
+          beforeHide = true;
+        }
+
+        var elm = compileDirective('options-events', {onBeforeHide: onBeforeHide});
+
+        angular.element(elm[0]).triggerHandler('click');
+        angular.element(elm[0]).triggerHandler('click');
+
+        expect(beforeHide).toBe(true);
+      });
+    });
+
+    describe('onHide', function() {
+
+      it('should invoke show event callback', function() {
+        var hide = false;
+
+        function onHide(select) {
+          hide = true;
+        }
+
+        var elm = compileDirective('options-events', {onHide: onHide});
+
+        angular.element(elm[0]).triggerHandler('click');
+        angular.element(elm[0]).triggerHandler('click');
+        $animate.flush();
+
+        expect(hide).toBe(true);
+      });
+    });
+
   });
 
+  describe('508', function () {
+    it('should set aria-hidden false on modal when shown', function () {
+      var elm = compileDirective('508', {});
+      expect(bodyEl.find('.modal').length).toBe(0);
+      angular.element(elm[0]).triggerHandler('click');
+      var modal = bodyEl.find('.modal');
+      expect(modal.length).toBe(1);
+
+      $animate.flush();
+
+      expect(jQuery(modal).attr('aria-hidden')).toBe('false');
+    });
+
+    it('should set aria-hidden true on body when shown', function () {
+      var elm = compileDirective('508', {});
+      expect(bodyEl.find('.modal').length).toBe(0);
+      angular.element(elm[0]).triggerHandler('click');
+      var modal = bodyEl.find('.modal');
+      expect(modal.length).toBe(1);
+
+      $animate.flush();
+
+      expect(jQuery(bodyEl).attr('aria-hidden')).toBe('true');
+    });
+
+    it('should focus the modal on open', function () {
+      var elm = compileDirective('508', {});
+      expect(bodyEl.find('.modal').length).toBe(0);
+      angular.element(elm[0]).triggerHandler('click');
+      var modal = bodyEl.find('.modal');
+      expect(modal.length).toBe(1);
+
+      spyOn(modal[0], 'focus')
+
+      $animate.flush();
+
+      expect(modal[0].focus).toHaveBeenCalled();
+    });
+
+    it('should focus the button when closed', function () {
+      var elm = compileDirective('508', {});
+      expect(bodyEl.find('.modal').length).toBe(0);
+      angular.element(elm[0]).triggerHandler('click');
+      var modal = bodyEl.find('.modal');
+      expect(modal.length).toBe(1);
+
+      $animate.flush();
+
+      spyOn(elm[0], 'focus');
+
+      jQuery('.modal BUTTON.btn.btn-default').triggerHandler('click');
+      modal = bodyEl.find('.modal');
+      expect(modal.length).toBe(0);
+
+      expect(elm[0].focus).toHaveBeenCalled();
+    });
+
+    it('should keep focus in the modal when the tab is triggered from the focused close button', function () {
+      var elm = compileDirective('508', {});
+      expect(bodyEl.find('.modal').length).toBe(0);
+      angular.element(elm[0]).triggerHandler('click');
+      var modal = bodyEl.find('.modal');
+      expect(modal.length).toBe(1);
+
+      $animate.flush();
+
+      jQuery('.modal BUTTON.btn.btn-default')[0].focus();
+
+      var evt = jQuery.Event( 'keydown', { keyCode: 9, which: 9 } );
+
+      var close = jQuery('.modal BUTTON.close');
+
+      spyOn(close[0], 'focus');
+
+      modal.triggerHandler(evt);
+
+      scope.$digest();
+
+      expect(close[0].focus).toHaveBeenCalled();
+    });
+
+    it('should keep focus in the modal when shift+tab is triggered from the focused close button', function () {
+      var elm = compileDirective('508', {});
+      expect(bodyEl.find('.modal').length).toBe(0);
+      angular.element(elm[0]).triggerHandler('click');
+      var modal = bodyEl.find('.modal');
+      expect(modal.length).toBe(1);
+
+      $animate.flush();
+
+      jQuery('.modal BUTTON.close')[0].focus();
+
+      var evt = jQuery.Event( 'keydown', { keyCode: 9, which: 9, shiftKey: true } );
+
+      var close = jQuery('.modal BUTTON.btn.btn-default');
+
+      spyOn(close[0], 'focus');
+
+      modal.triggerHandler(evt);
+
+      scope.$digest();
+
+      expect(close[0].focus).toHaveBeenCalled();
+    });
+  });
 });

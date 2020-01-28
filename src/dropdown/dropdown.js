@@ -28,7 +28,8 @@ angular.module('mgcrea.ngStrap.dropdown', ['mgcrea.ngStrap.tooltip'])
 
         // Common vars
         var options = angular.extend({}, defaults, config);
-        /* var scope = */$dropdown.$scope = options.scope && options.scope.$new() || $rootScope.$new();
+        /* var scope = */
+        $dropdown.$scope = options.scope && options.scope.$new() || $rootScope.$new();
 
         $dropdown = $tooltip(element, options);
         var parentEl = element.parent();
@@ -36,6 +37,10 @@ angular.module('mgcrea.ngStrap.dropdown', ['mgcrea.ngStrap.tooltip'])
         // Protected methods
 
         $dropdown.$onKeyDown = function (evt) {
+          if (/(9)/.test(evt.keyCode)) {
+            $dropdown.hide();
+            return;
+          }
           if (!/(38|40)/.test(evt.keyCode)) return;
           evt.preventDefault();
           evt.stopPropagation();
@@ -126,7 +131,9 @@ angular.module('mgcrea.ngStrap.dropdown', ['mgcrea.ngStrap.tooltip'])
         return function postLink (scope, element, attr) {
 
           // Directive options
-          var options = {scope: scope};
+          var options = {
+            scope: scope
+          };
           angular.forEach(['template', 'templateUrl', 'controller', 'controllerAs', 'placement', 'container', 'delay', 'trigger', 'keyboard', 'html', 'animation', 'id', 'autoClose'], function (key) {
             if (angular.isDefined(tAttrs[key])) options[key] = tAttrs[key];
           });
@@ -135,6 +142,14 @@ angular.module('mgcrea.ngStrap.dropdown', ['mgcrea.ngStrap.tooltip'])
           var falseValueRegExp = /^(false|0|)$/i;
           angular.forEach(['html', 'container'], function (key) {
             if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
+          });
+
+          // bind functions from the attrs to the show and hide events
+          angular.forEach(['onBeforeShow', 'onShow', 'onBeforeHide', 'onHide'], function (key) {
+            var bsKey = 'bs' + key.charAt(0).toUpperCase() + key.slice(1);
+            if (angular.isDefined(attr[bsKey])) {
+              options[key] = scope.$eval(attr[bsKey]);
+            }
           });
 
           // Support scope as an object
