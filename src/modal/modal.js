@@ -83,6 +83,7 @@ angular.module('mgcrea.ngStrap.modal', ['mgcrea.ngStrap.core', 'mgcrea.ngStrap.h
         // Fetch, compile then initialize modal
         var compileData;
         var modalElement;
+        var backdropMouseDown = false;
         var modalScope;
         var backdropElement = angular.element('<div class="' + options.prefixClass + '-backdrop"/>');
         backdropElement.css({position: 'fixed', top: '0px', left: '0px', bottom: '0px', right: '0px'});
@@ -286,6 +287,10 @@ angular.module('mgcrea.ngStrap.modal', ['mgcrea.ngStrap.core', 'mgcrea.ngStrap.h
 
         function bindBackdropEvents () {
           if (options.backdrop) {
+            if (options.backdrop !== 'static') {
+              modalElement.on('mousedown', preventHideOnDialogMouseDown);
+              backdropElement.on('mousedown', preventHideOnDialogMouseDown);
+            }
             modalElement.on('click', hideOnBackdropClick);
             backdropElement.on('click', hideOnBackdropClick);
             backdropElement.on('wheel', preventEventDefault);
@@ -294,6 +299,10 @@ angular.module('mgcrea.ngStrap.modal', ['mgcrea.ngStrap.core', 'mgcrea.ngStrap.h
 
         function unbindBackdropEvents () {
           if (options.backdrop) {
+            if (options.backdrop !== 'static') {
+              modalElement.off('mousedown', preventHideOnDialogMouseDown);
+              backdropElement.off('mousedown', preventHideOnDialogMouseDown);
+            }
             modalElement.off('click', hideOnBackdropClick);
             backdropElement.off('click', hideOnBackdropClick);
             backdropElement.off('wheel', preventEventDefault);
@@ -312,15 +321,22 @@ angular.module('mgcrea.ngStrap.modal', ['mgcrea.ngStrap.core', 'mgcrea.ngStrap.h
           }
         }
 
+        function preventHideOnDialogMouseDown(evt) {
+          if (evt.target === evt.currentTarget) {
+            backdropMouseDown = true;
+          }
+        }
+
         // Private helpers
 
         function hideOnBackdropClick (evt) {
           if (evt.target !== evt.currentTarget) return;
           if (options.backdrop === 'static') {
             $modal.focus();
-          } else {
+          } else if (backdropMouseDown) {
             $modal.hide();
           }
+          backdropMouseDown = false;
         }
 
         function preventEventDefault (evt) {
