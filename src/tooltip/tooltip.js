@@ -640,7 +640,17 @@ angular.module('mgcrea.ngStrap.tooltip', ['mgcrea.ngStrap.core', 'mgcrea.ngStrap
 
           // If it's an exotic placement, exit now instead of
           // applying a delta and changing the arrow
-          if (/top-left|top-right|bottom-left|bottom-right/.test(placement)) return;
+          /*****************************************************************************************
+           * BLOVE 2020-08-06: removed this from GradeCam's custom build because
+           * "exotically placed" datepickers (bottom-left) were flying off the bottom
+           * of the screen frequently, esp. on small devices. By letting it continue,
+           * this proceeds to calculate the viewport width and adjust the top position
+           * to keep the bottom on-screen.
+           * The primary side effect we have noticed so far is that it allows these
+           * tooltips / datepickres to pop up and mask the element they are anchored
+           * to, which seems like an acceptable compromise.
+           ****************************************************************************************/
+          // if (/top-left|top-right|bottom-left|bottom-right/.test(placement)) return;
 
           var delta = getViewportAdjustedDelta(placement, offset, actualWidth, actualHeight);
 
