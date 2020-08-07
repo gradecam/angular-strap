@@ -1,6 +1,6 @@
 /**
  * angular-strap
- * @version v2.3.9 - 2016-06-10
+ * @version v2.3.9 - 2020-08-07
  * @link http://mgcrea.github.io/angular-strap
  * @author Olivier Louvignes <olivier@mg-crea.com> (https://github.com/mgcrea)
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -497,7 +497,6 @@ angular.module('mgcrea.ngStrap.tooltip', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStra
         if (placement === 'top' && actualHeight !== height) {
           offset.top = offset.top + height - actualHeight;
         }
-        if (/top-left|top-right|bottom-left|bottom-right/.test(placement)) return;
         var delta = getViewportAdjustedDelta(placement, offset, actualWidth, actualHeight);
         if (delta.left) {
           offset.left += delta.left;
